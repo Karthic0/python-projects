@@ -128,30 +128,33 @@ class Game_A(Game):
             self.Score_board.Creat_scoreboard()
     
 class Game_B(Game):
+
     def __init__(self,Player_count,Dice_count,Dice_type,Game_type,Players):
-        super.__init__(Player_count,Dice_count,Dice_type,Game_type,Players)
+        super().__init__(Player_count,Dice_count,Dice_type,Game_type,Players)
+
         """Specilized game for b) Who ever rolls  a particular sequence"""
-        self.Goal_sequence = list(map(int,input("Enter the sequence").split(" ")))
-        while len(self.Goal_sequence) < self.Dise_count:
-            print("Sorry the length of the sequence of dice is greater than no of dice")
-            sequence = list(map(int,input("Enter the sequence").split(" ")))
-            self.Goal_sequence = {}
-            for number in set(sequence):
-                self.Goal_sequence[number] = sequence.count(number)
-            
+        Goal_sequence = list(map(int,input("Enter the sequence : ").split(" ")))
+        while len(Goal_sequence) > self.Dice_count or set(Goal_sequence) - set(i for i in range(1,self.Dice_type + 1 )) :
+            print("Sorry the length of the sequence of dice is greater than no of dice or has invalid type")
+            Goal_sequence = list(map(int,input("Enter the sequence : ").split(" "))) 
+        self.Goal_sequence = {}
+        for number in set(Goal_sequence):
+            self.Goal_sequence[number] = Goal_sequence.count(number)
+        
     def Check_winner(self,Rolls):
         for number in self.Goal_sequence.keys():
-            if Rolls.count(number) != self.Goal_sequence[number]:
+            if Rolls.count(number) < self.Goal_sequence[number]:
                 return False
         return True     
 
     def Game_Loop(self):
         current_Round = 1
         while True:
+            print("-"*50)
             print(f"ROUND {current_Round}!")
             for id in self.Players:
                 Player = self.Players[id]
-                print(f"{Player}'s Turn")
+                print(f"{Player.Name}'s Turn")
                 Rolls = self.Roll_Dice(Player)
                 Player.Rolles_History.append(Rolls)
                 if self.Check_winner(Rolls):
@@ -220,7 +223,7 @@ def Game_Players():
     Creats the player base
     """
     no_of_players = input("Can you specify the no of players who are willing to play this game? : ").strip()
-    while (not no_of_players.isnumeric() or (int(no_of_players) < 1 or int(no_of_players) > 10 )):
+    while (not no_of_players.isnumeric() or (int(no_of_players) < 2 or int(no_of_players) > 10 )):
         print("Sorry the no of Players must be between 1-10.")
         no_of_players = input("Can you specify the no of players who are willing to play this game? : ").strip()
     no_of_players  = int(no_of_players)

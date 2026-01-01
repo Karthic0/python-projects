@@ -162,10 +162,35 @@ class Game_B(Game):
             print(f"END of ROUND {current_Round}")
             current_Round += 1
 
-class Game_C:
-    pass
+class Game_C(Game):
+    
+    def __init__(self,Player_count,Dice_count,Dice_type,Game_type,Players):
+        super().__init__(Player_count,Dice_count,Dice_type,Game_type,Players)
 
-class Game_D:
+        """Specilized game for c) Get a particular sum in a role."""
+        Goal_sum = input("Enter the number to reach : ").strip()
+        while (not Goal_sum.isnumeric() or int(Goal_sum) < 1 or int(Goal_sum) > Dice_count*Dice_type or int(Goal_sum) < Dice_count):
+            print(f"Sorry invalid choice Goal must be between {Dice_count} and {Dice_count*Dice_type}")
+            Goal_sum = input("Enter the number to reach : ").strip()
+        self.Goal_sum = int(Goal_sum)
+
+    def Game_Loop(self):
+        current_Round = 1
+        while True:
+            print("-"*50)
+            print(f"ROUND {current_Round}!")
+            for id in self.Players:
+                Player = self.Players[id]
+                print(f"{Player.Name}'s Turn")
+                Rolls = self.Roll_Dice(Player)
+                Player.Rolles_History.append(Rolls)
+                if sum(Rolls) == self.Goal_sum:
+                    return id
+            print(f"END of ROUND {current_Round}")
+            current_Round += 1
+
+
+class Game_D(Game):
     pass
 
 def Game_intro():
@@ -223,7 +248,7 @@ def Game_Players():
     Creats the player base
     """
     no_of_players = input("Can you specify the no of players who are willing to play this game? : ").strip()
-    while (not no_of_players.isnumeric() or (int(no_of_players) < 2 or int(no_of_players) > 10 )):
+    while (not no_of_players.isnumeric() or (int(no_of_players) < 1 or int(no_of_players) > 10 )):
         print("Sorry the no of Players must be between 1-10.")
         no_of_players = input("Can you specify the no of players who are willing to play this game? : ").strip()
     no_of_players  = int(no_of_players)

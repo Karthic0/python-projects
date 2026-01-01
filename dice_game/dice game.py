@@ -5,6 +5,11 @@ class PLAYER:
         self.Name = Name
         self.Score = 0
         self.Rolles_History = []
+        self.Wins = 0
+
+    def Reset(self):
+        self.Score = 0
+        self.Rolles_History = []
 
 class ScoreBoard:
 
@@ -69,7 +74,7 @@ class Game:
         input("Enter a character to roll the dices : ")
         print(f"You have rolled:",end = "")
         for _ in range(self.Dice_count):
-            Curr_Roll = Generator(1,self.Dice_count)
+            Curr_Roll = Generator(1,self.Dice_type)
             Dice_Rolls.append(Curr_Roll)
             print(f"| {Curr_Roll} |",end = "")
         print()
@@ -83,14 +88,19 @@ class Game_A(Game):
 
         temp1 = input("Enter the numbere that when rolled would reset the score \n(enter n to not add this feature): ").lower()
         temp2 = input("Can there be a rerolle y/n: ").lower()
+
         self.Value = int(input("Enter the Score to reach : "))
+        while (self.Value < 1):
+            print("sorry the Score cannot be negative or Zero.")
+            self.Value = int(input("Enter the Score to reach : "))
+
         self.Reroles = 0
         self.Score_board = ScoreBoard(Players)
+        if temp2 == "y":
+            self.Reroles = 1
         if temp1 == "n":
             temp1 = 0
         self.Reset_number = int(temp1)
-        if temp2 == "y":
-            self.Reroles = 1
 
     def Game_Loop(self):
         current_Round = 1
@@ -155,6 +165,9 @@ class Game_D:
     pass
 
 def Game_intro():
+    '''
+    Gives intro about the game
+    '''
     print(f"{'Dice Game'.center(50,'-')}")
     print("Welcome to Dice Game!")
     print("Rules of the Game:")
@@ -164,21 +177,11 @@ def Game_intro():
     print("a) Total score excedes a particular no.\nb) Who ever rolls  a particular sequence.\nc) Get a particular sum in a role.\nd) Who could roll the max sum.""")
     print("-"*50)
 
-def Game_initial():
-    print("Now lets create the game")
-    Players = {}
-    DICES = int(input("Enter the no of dice : "))
-    SIDES = int(input("Enter the no of sides of the dice: "))
-    no_of_players = int(input("Can you specify the no of players who are willing to play this game? : "))
-    for id in range(no_of_players):
-        player = PLAYER(input(f"Enter player {id+1} name : ").title())
-        Players[id] = player
-    while True:
-        TYPE = input("Enter the type of game (a or b or c or d): ").lower()
-        if TYPE not in "abc":
-            print("Invalid choice! Try again")
-            continue
-        break
+def Game_start(no_of_players,DICES,SIDES,TYPE,Players):
+    '''
+    Selects the game type and replay condition
+    '''
+    Flag = "y"
     if TYPE == "a":
         GAME = Game_A(no_of_players,DICES,SIDES,TYPE,Players)
     elif TYPE == "b":
@@ -187,15 +190,80 @@ def Game_initial():
         GAME = Game_C(no_of_players,DICES,SIDES,TYPE,Players)
     elif TYPE == "d":
         GAME = Game_D(no_of_players,DICES,SIDES,TYPE,Players)
-    GAME.Game_Loop()
-    print(f"Player {Players[id].Name} has won the Game. \U0001F3C6")
-    print("Hears your Crown \U0001F451")
-    if TYPE == "a":
-        print("Final Score Board.")
+        
+    while Flag == 'y':
+        id = GAME.Game_Loop()
+        print(f"Player {Players[id].Name} has won the Game. \U0001F3C6")
+        print("Hears your Crown \U0001F451")
+        Players[id].Wins += 1
+
+        for id in Players.keys():
+            print(f"{Players[id].Name} Wins {Players[id].Wins}")
+        Flag = input("Whant to play the same Game(y) : ").lower()
+        if Flag == 'y':
+            if input("Whant to have same Players? (y) : ").lower() != 'y':
+                no_of_players,Players = Game_Players()
+                GAME.Players = Players
+                GAME.Player_count  = no_of_players
+                GAME.Score_board = ScoreBoard(Players)
+            else:
+                for player in Players.values():
+                    player.Reset()
+    if input("Whant to play a different Game? (y) : ").lower() == "y":
+        if input("Whant to have same Players? (y) : ").lower() != 'y':
+            Players = Game_Players()
+        else:
+            for player in Players.values():
+                player.Reset()
+        pass
+    else:
+        print("Thanks for Playing this Game.")
+        print("Hope You Enjoyed it.")
+        print("See you later. Bye!.")
+            
+def Game_Players():
+    """
+    Creats the player base
+    """
+    no_of_players = int(input("Can you specify the no of players who are willing to play this game? : "))
+    while (no_of_players < 1 or no_of_players > 10):
+        print("Sorry the no of Players must be between 1-10.")
+        no_of_players = int(input("Can you specify the no of players who are willing to play this game? : "))
+    
+    Players = {}
+    for id in range(no_of_players):
+        player = PLAYER(input(f"Enter player {id+1} name : ").title())
+        Players[id] = player
+    return no_of_players,Players
+
+def Game_creat():
+    """
+    basic game creation from user inputs(dices,sides,type of game)
+    """
+    print("Now lets create the game")
+
+    DICES = int(input("Enter the no of dice : "))
+    while (DICES < 1 or DICES > 10):
+        print("Sorry the no of dice must be between 1-10")
+        DICES = int(input("Enter the no of dice : "))
+
+    SIDES = int(input("Enter the no of sides of the dice: "))
+    while (SIDES < 1 or SIDES > 25):
+        print("Sorry the no of sides must be between 1-24.")
+        SIDES = int(input("Enter the no of sides of the dice: "))
+
+    TYPE = input("Enter the type of game (a or b or c or d): ").lower()
+    while TYPE not in "abcd":
+        print("Invalid choice! Select a valid Type.")
+        TYPE = input("Enter the type of game (a or b or c or d): ").lower()
+
+    return DICES,SIDES,TYPE
 
 if __name__ == "__main__":
     Game_intro()
-    Game_initial()
+    DICES,SIDES,TYPE = Game_creat()
+    no_of_players,Players = Game_Players()
+    Game_start(no_of_players,DICES,SIDES,TYPE,Players)
 
 
 

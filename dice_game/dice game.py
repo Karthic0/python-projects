@@ -189,9 +189,43 @@ class Game_C(Game):
             print(f"END of ROUND {current_Round}")
             current_Round += 1
 
-
 class Game_D(Game):
-    pass
+
+    def __init__(self,Player_count,Dice_count,Dice_type,Game_type,Players):
+        super().__init__(Player_count,Dice_count,Dice_type,Game_type,Players)
+
+        """Specilized game for d) Who could roll the max sum."""
+        Rounds = input("Enter the number of rounds : ").strip()
+        while (not Rounds.isnumeric() or int(Rounds) < 1 ):
+            print(f"Sorry invalid choice Rounds must be greater Than 1")
+            Rounds = input("Enter the number of rounds : ").strip()
+        self.Rounds = int(Rounds)
+
+    def Game_Loop(self):
+        current_Round = 1
+        Max_id = 0
+        Max_Score = 0
+        while current_Round < self.Rounds + 1 :
+            print("-"*50)
+            print(f"ROUND {current_Round}!")
+            for id in self.Players:
+                Player = self.Players[id]
+                print(f"{Player.Name}'s Turn")
+                Rolls = self.Roll_Dice(Player)
+                Player.Rolles_History.append(Rolls)
+                if sum(Rolls) == self.Dice_count*self.Dice_type:
+                    print("Wow! What a role. You got the max possible score ")
+                    return id
+                if Max_Score < sum(Rolls):
+                    if  Max_id != id :
+                        print(f"Oops {Player.Name} had beaten {self.Players[Max_id].Name} to claim first place. ")
+                        Max_id = id
+                    Max_Score = sum(Rolls)
+                    
+            print(f"END of ROUND {current_Round}")
+            print(f"{self.Players[Max_id].Name} has the highest score with {Max_Score}")
+            current_Round += 1
+        return Max_id
 
 def Game_intro():
     '''
@@ -213,12 +247,14 @@ def Game_start(no_of_players,DICES,SIDES,TYPE,Players,GAME):
     Flag = "y"
     while Flag == 'y':
         id = GAME.Game_Loop()
+        print("-"*50)
         print(f"Player {Players[id].Name} has won the Game. \U0001F3C6")
         print("Hears your Crown \U0001F451")
         Players[id].Wins += 1
-
+        print("-"*50)
         for id in Players.keys():
-            print(f"{Players[id].Name} Wins {Players[id].Wins}")
+            print(f"{Players[id].Name} no of Wins {Players[id].Wins}")
+        print("-"*50)
         Flag = input("Whant to play the same Game(y) : ").strip().lower()
         if Flag == 'y':
             if input("Whant to have same Players? (y) : ").strip().lower() != 'y':
@@ -229,6 +265,7 @@ def Game_start(no_of_players,DICES,SIDES,TYPE,Players,GAME):
             else:
                 for player in Players.values():
                     player.Reset()
+                    
     if input("Whant to play a different Game? (y) : ").strip().lower() == "y":
         if input("Whant to have same Players? (y) : ").strip().lower() != 'y':
             no_of_players,Players = Game_Players()
@@ -237,11 +274,12 @@ def Game_start(no_of_players,DICES,SIDES,TYPE,Players,GAME):
                 player.Reset()
         DICES,SIDES,TYPE,GAME = Game_creat(no_of_players,Players)
         Game_start(no_of_players,DICES,SIDES,TYPE,Players,GAME)
-        
     else:
+        print("-"*50)
         print("Thanks for Playing this Game.")
         print("Hope You Enjoyed it.")
         print("See you later. Bye!.")
+        print("-"*50)
             
 def Game_Players():
     """

@@ -1,4 +1,5 @@
 from random import randint as Generator
+
 class PLAYER:
 
     def __init__(self,Name):
@@ -334,27 +335,3 @@ if __name__ == "__main__":
     no_of_players,Players = Game_Players()
     DICES,SIDES,TYPE,GAME = Game_creat(no_of_players,Players)
     Game_start(no_of_players,DICES,SIDES,TYPE,Players,GAME)
-
-
-
-    
-    
-
-
-        
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -79,6 +79,24 @@ class Game:
             print(f"| {Curr_Roll} |",end = "")
         print()
         return Dice_Rolls
+    
+    def Game_Loop(self):
+        '''
+        loop of the game
+        '''
+        current_Round = 1
+        while True:
+            print("-"*50)
+            print(f"ROUND {current_Round}!")
+            for id in self.Players:
+                Player = self.Players[id]
+                print(f"{Player.Name}'s Turn")
+                Rolls = self.Roll_Dice(Player)
+                Player.Rolles_History.append(Rolls)
+                if self.Check_winner(Rolls):
+                    return id
+            print(f"END of ROUND {current_Round}")
+            current_Round += 1
             
 class Game_A(Game):
 
@@ -142,25 +160,16 @@ class Game_B(Game):
             self.Goal_sequence[number] = Goal_sequence.count(number)
         
     def Check_winner(self,Rolls):
+        '''
+        Checks win condition
+        
+        :param self: Description
+        :param Rolls: Description
+        '''
         for number in self.Goal_sequence.keys():
             if Rolls.count(number) < self.Goal_sequence[number]:
                 return False
         return True     
-
-    def Game_Loop(self):
-        current_Round = 1
-        while True:
-            print("-"*50)
-            print(f"ROUND {current_Round}!")
-            for id in self.Players:
-                Player = self.Players[id]
-                print(f"{Player.Name}'s Turn")
-                Rolls = self.Roll_Dice(Player)
-                Player.Rolles_History.append(Rolls)
-                if self.Check_winner(Rolls):
-                    return id
-            print(f"END of ROUND {current_Round}")
-            current_Round += 1
 
 class Game_C(Game):
     
@@ -174,20 +183,10 @@ class Game_C(Game):
             Goal_sum = input("Enter the number to reach : ").strip()
         self.Goal_sum = int(Goal_sum)
 
-    def Game_Loop(self):
-        current_Round = 1
-        while True:
-            print("-"*50)
-            print(f"ROUND {current_Round}!")
-            for id in self.Players:
-                Player = self.Players[id]
-                print(f"{Player.Name}'s Turn")
-                Rolls = self.Roll_Dice(Player)
-                Player.Rolles_History.append(Rolls)
-                if sum(Rolls) == self.Goal_sum:
-                    return id
-            print(f"END of ROUND {current_Round}")
-            current_Round += 1
+    def Check_winner(self,Rolls):
+        if sum(Rolls) == self.Goal_sum:
+            return True
+        return False 
 
 class Game_D(Game):
 

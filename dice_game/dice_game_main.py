@@ -7,7 +7,7 @@ Description: A multi-mode dice game using OOP.
 from random import randint as Generator
 from Player import PLAYER
 from Scoreboard import ScoreBoard
-2
+
 class Game:
     """
     Represents the game played.
